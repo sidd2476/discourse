@@ -128,7 +128,12 @@ export default Component.extend({
     }
 
     _chatMessageDecorators.forEach((decorator) => {
-      decorator.call(this, this.messageContainer, this.chatChannel);
+      decorator.call(
+        this,
+        this.messageContainer,
+        this.chatChannel,
+        this.message
+      );
     });
   },
 
