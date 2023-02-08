@@ -26,6 +26,7 @@ import {
 } from "discourse/lib/user-presence";
 import isZoomed from "discourse/plugins/chat/discourse/lib/zoom-check";
 import { isTesting } from "discourse-common/config/environment";
+import User from "discourse/models/user";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 50;
@@ -513,8 +514,15 @@ export default Component.extend({
     this._handleMessageHidingAndExpansion(messageData);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
     const prepared = ChatMessage.create(messageData);
+    this._initUserModels(prepared);
     this.messageLookup[messageData.messageLookupId] = prepared;
     return prepared;
+  },
+
+  _initUserModels(message) {
+    message.mentioned_users = message.mentioned_users.map((userAttrs) =>
+      User.create(userAttrs)
+    );
   },
 
   _handleMessageHidingAndExpansion(messageData) {
