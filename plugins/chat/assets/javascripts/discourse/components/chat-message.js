@@ -80,6 +80,10 @@ export default Component.extend({
     );
 
     this.set("cachedFavoritesReactions", this.chatEmojiReactionStore.favorites);
+
+    this.message.mentioned_users.forEach((user) => {
+      user.trackStatus();
+    });
   },
 
   willDestroyElement() {
@@ -101,6 +105,10 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+
+    this.message.mentioned_users.forEach((user) => {
+      user.stopTrackingStatus();
+    });
   },
 
   didReceiveAttrs() {
