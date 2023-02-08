@@ -83,6 +83,7 @@ export default Component.extend({
 
     this.message.mentioned_users.forEach((user) => {
       user.trackStatus();
+      user.on?.("status-changed", this, "_refreshStatusesOnMentions");
     });
   },
 
@@ -108,6 +109,7 @@ export default Component.extend({
 
     this.message.mentioned_users.forEach((user) => {
       user.stopTrackingStatus();
+      user.off?.("status-changed", this, "_refreshStatusesOnMentions");
     });
   },
 
@@ -127,6 +129,10 @@ export default Component.extend({
     if (message.id === this.message.id) {
       this.decorateMessageCooked();
     }
+  },
+
+  _refreshStatusesOnMentions() {
+    this._refreshedMessage(this.message);
   },
 
   @bind
