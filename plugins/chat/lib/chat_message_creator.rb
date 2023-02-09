@@ -51,6 +51,7 @@ class Chat::ChatMessageCreator
       validate_existing_thread!
       @chat_message.thread_id = @existing_thread&.id
       @chat_message.cook
+      create_chat_mentions
       @chat_message.save!
       create_chat_webhook_event
       create_thread
@@ -66,6 +67,7 @@ class Chat::ChatMessageCreator
       DiscourseEvent.trigger(:chat_message_created, @chat_message, @chat_channel, @user)
     rescue => error
       @error = error
+      raise error
     end
   end
 
@@ -202,5 +204,14 @@ class Chat::ChatMessageCreator
     SQL
 
     @chat_message.thread_id = thread.id
+  end
+
+  def create_chat_mentions
+    mentions = PrettyText.extract_mentions(Nokogiri::HTML5.fragment(@chat_message.cooked))
+    return if mentions.blank?
+
+    User
+      .where(username: mentions)
+      .each { |user| ChatMention.create(chat_message: @chat_message, user: user) }
   end
 end
