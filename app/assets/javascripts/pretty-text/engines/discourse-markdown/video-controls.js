@@ -68,6 +68,7 @@ function rule(state) {
 function ruleWithVideoControls(oldRule) {
   return function (tokens, idx, options, env, slf) {
     const token = tokens[idx];
+    return oldRule(tokens, idx, options, env, slf);
     //const scaleIndex = token.attrIndex("scale");
     //const imageIndex = token.attrIndex("index-image");
 
@@ -143,6 +144,7 @@ export function setup(helper) {
     });
   }
   var video = document.getElementById("thumb");
+  console.log('video-controls.js');
   console.log(video);
   //video.addEventListener("loadedmetadata", initScreenshot);
   ///video.addEventListener("playing", startScreenshot);
