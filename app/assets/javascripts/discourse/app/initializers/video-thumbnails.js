@@ -113,9 +113,9 @@ export default {
         window.addEventListener("focus", this.focusEvent);
       }
 
-      console.log('video-thumbnails');
-      let video = document.getElementById("thumb");
-      console.log("video: " + video);
+      //console.log('video-thumbnails');
+      //let video = document.getElementById("thumb");
+      //console.log("video: " + video);
     });
   },
 
