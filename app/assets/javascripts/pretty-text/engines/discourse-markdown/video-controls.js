@@ -30,12 +30,8 @@ function buildPlaceholder() {
   `
 }
 
-function buildThumbnail(timestamp) {
+function buildThumbnail() {
   return `
-  <video id="thumb" controls preload="metadata" width="750px" height="540px">
-    <source src="//localhost:3000/uploads/default/original/1X/f654a8514f2880e9205859d90c34ce88246880a4.mp4"
-            type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"'>
-  </video>
   <canvas id="canvas"
           width="750px" height="540px"
           style="display:block;">
@@ -85,12 +81,13 @@ function ruleWithVideoControls(oldRule) {
     //  let selectedScale = token.attrs[scaleIndex][1];
     //  let index = token.attrs[imageIndex][1];
 
-    let result = `<span class="image-wrapper"></span>`;
-    result += buildPlaceholder();
-
+    let result = ``;
     result += oldRule(tokens, idx, options, env, slf);
+    result += buildPlaceholder();
+    result += buildThumbnail();
 
-    result += `<span class="button-wrapper"></span>`;
+    result += `<span class="image-wrapper">`;
+    result += `<span class="button-wrapper">`;
     result += buildVideoShowTimestampControls(1);
     //result += buildThumbnail(1);
     //  result += buildImageEditAltTextControls(

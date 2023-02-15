@@ -601,56 +601,56 @@ export default Component.extend(ComposerUploadUppy, {
     // Now upload the image
     //
     //const id = this.get("field.id");
-    const id = 12;
-    this._uppyInstance = new Uppy({
-      id: `screenshot-placeholder`,
-      meta: { upload_type: `thumbnail_${id}` },
-      autoProceed: true,
-    });
+    //const id = 12;
+    //this._uppyInstance = new Uppy({
+    //  id: `screenshot-placeholder`,
+    //  meta: { upload_type: `thumbnail_${id}` },
+    //  autoProceed: true,
+    //});
 
-    this._uppyInstance.use(XHRUpload, {
-      endpoint: getUrl("/uploads.json"),
-      headers: {
-        "X-CSRF-Token": this.session.csrfToken,
-      },
-    });
+    //this._uppyInstance.use(XHRUpload, {
+    //  endpoint: getUrl("/uploads.json"),
+    //  headers: {
+    //    "X-CSRF-Token": this.session.csrfToken,
+    //  },
+    //});
 
-    this._uppyInstance.use(DropTarget, { target: this.element });
+    //this._uppyInstance.use(DropTarget, { target: this.element });
 
-    this._uppyInstance.on("upload", () => {
-      this.set("uploading", true);
-    });
+    //this._uppyInstance.on("upload", () => {
+    //  this.set("uploading", true);
+    //});
 
-    this._uppyInstance.on("upload-success", (file, response) => {
-      this.set("field.value", response.body.url);
-      this.set("uploading", false);
-    });
+    //this._uppyInstance.on("upload-success", (file, response) => {
+    //  this.set("field.value", response.body.url);
+    //  this.set("uploading", false);
+    //});
 
-    this._uppyInstance.on("upload-error", (file, error, response) => {
-      let message = I18n.t("wizard.upload_error");
-      if (response.body.errors) {
-        message = response.body.errors.join("\n");
-      }
+    //this._uppyInstance.on("upload-error", (file, error, response) => {
+    //  let message = I18n.t("wizard.upload_error");
+    //  if (response.body.errors) {
+    //    message = response.body.errors.join("\n");
+    //  }
 
-      this.dialog.alert(message);
-      this.set("uploading", false);
-    });
+    //  this.dialog.alert(message);
+    //  this.set("uploading", false);
+    //});
 
-    const files = Array.from(event.target.files);
-    files.forEach((file) => {
-      try {
-        this._uppyInstance.addFile({
-          source: `${this.id} file input`,
-          name: file.name,
-          type: file.type,
-          data: file,
-        });
-      } catch (err) {
-        warn(`error adding files to uppy: ${err}`, {
-          id: "discourse.upload.uppy-add-files-error",
-        });
-      }
-    });
+    //const files = Array.from(event.target.files);
+    //files.forEach((file) => {
+    //  try {
+    //    this._uppyInstance.addFile({
+    //      source: `${this.id} file input`,
+    //      name: file.name,
+    //      type: file.type,
+    //      data: file,
+    //    });
+    //  } catch (err) {
+    //    warn(`error adding files to uppy: ${err}`, {
+    //      id: "discourse.upload.uppy-add-files-error",
+    //    });
+    //  }
+    //});
 
 
 
