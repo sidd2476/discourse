@@ -29,7 +29,6 @@ class Chat::ChatMessageUpdater
       upload_info = get_upload_info
       validate_message!(has_uploads: upload_info[:uploads].any?)
       @chat_message.cook
-      update_mentions
       @chat_message.save!
       update_uploads(upload_info)
       revision = save_revision!
@@ -95,20 +94,5 @@ class Chat::ChatMessageUpdater
       new_message: @chat_message.message,
       user_id: @user.id,
     )
-  end
-
-  def update_mentions
-    old_mentions = @chat_message.chat_mentions.map { |mention| mention.user.username }
-    new_mentions = PrettyText.extract_mentions(Nokogiri::HTML5.fragment(@chat_message.cooked))
-
-    dropped_usernames = old_mentions - new_mentions
-    dropped_mentions =
-      @chat_message.chat_mentions.filter { |m| dropped_usernames.include?(m.user.username) }
-    @chat_message.chat_mentions.delete(dropped_mentions)
-
-    added_usernames = new_mentions - old_mentions
-    User
-      .where(username: added_usernames)
-      .each { |user| ChatMention.create(chat_message: @chat_message, user: user) }
   end
 end
