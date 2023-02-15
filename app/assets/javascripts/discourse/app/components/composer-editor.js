@@ -45,6 +45,7 @@ import getUrl from "discourse-common/lib/get-url";
 import Uppy from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
+import { warn } from "@ember/debug";
 
 // original string `![image|foo=bar|690x220, 50%|bar=baz](upload://1TjaobgKObzpU7xRMw2HuUc87vO.png "image title")`
 // group 1 `image|foo=bar`
@@ -580,7 +581,6 @@ export default Component.extend(ComposerUploadUppy, {
 
     console.log('VideoThumbnailButtonClick');
     var video = document.getElementById("thumb");
-    console.log(video);
 
     let canvas = document.getElementById("canvas");
     let ctx = canvas.getContext("2d");
@@ -593,63 +593,83 @@ export default Component.extend(ComposerUploadUppy, {
 
     ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
     var img = new Image();
+    //if (canvas.getContext) {
+    //  let img = document.createElement("img");
+      //img.crossOrigin = "anonymous";
+      //img.src = canvas.toDataURL("image/png");
+    //}
+    //let img = document.createElement("img");
+    //img.crossOrigin = "anonymous";
+    //img.setAttribute("crossorigin", "anonymous");
+    //const dataURL = canvas.toDataURL("image/png");
+    //console.log(dataURL);
     img.src = canvas.toDataURL("image/png");
     img.width = videoWidth;
     img.height = videoHeight;
-    ssContainer.appendChild(img);
+    canvas.toBlob(blob => {
+
+    //ssContainer.appendChild(img);
 
     // Now upload the image
     //
     //const id = this.get("field.id");
-    //const id = 12;
-    //this._uppyInstance = new Uppy({
-    //  id: `screenshot-placeholder`,
-    //  meta: { upload_type: `thumbnail_${id}` },
-    //  autoProceed: true,
-    //});
+      const id = 12;
+      this._uppyInstance = new Uppy({
+        id: `screenshot-placeholder`,
+        meta: { upload_type: `thumbnail_${id}` },
+        autoProceed: true,
+      });
 
-    //this._uppyInstance.use(XHRUpload, {
-    //  endpoint: getUrl("/uploads.json"),
-    //  headers: {
-    //    "X-CSRF-Token": this.session.csrfToken,
-    //  },
-    //});
+      this._uppyInstance.use(XHRUpload, {
+        endpoint: getUrl("/uploads.json"),
+        headers: {
+          "X-CSRF-Token": this.session.csrfToken,
+        },
+      });
 
-    //this._uppyInstance.use(DropTarget, { target: this.element });
+      this._uppyInstance.use(DropTarget, { target: this.element });
 
-    //this._uppyInstance.on("upload", () => {
-    //  this.set("uploading", true);
-    //});
+      this._uppyInstance.on("upload", () => {
+        this.set("uploading", true);
+      });
 
-    //this._uppyInstance.on("upload-success", (file, response) => {
-    //  this.set("field.value", response.body.url);
-    //  this.set("uploading", false);
-    //});
+      this._uppyInstance.on("upload-success", (file, response) => {
+        //this.set("field.value", response.body.url);
+        this.set("uploading", false);
+      });
 
-    //this._uppyInstance.on("upload-error", (file, error, response) => {
-    //  let message = I18n.t("wizard.upload_error");
-    //  if (response.body.errors) {
-    //    message = response.body.errors.join("\n");
-    //  }
+      this._uppyInstance.on("upload-error", (file, error, response) => {
+        let message = I18n.t("wizard.upload_error");
+        if (response.body.errors) {
+          message = response.body.errors.join("\n");
+        }
 
-    //  this.dialog.alert(message);
-    //  this.set("uploading", false);
-    //});
+        this.dialog.alert(message);
+        this.set("uploading", false);
+      });
 
-    //const files = Array.from(event.target.files);
-    //files.forEach((file) => {
-    //  try {
-    //    this._uppyInstance.addFile({
-    //      source: `${this.id} file input`,
-    //      name: file.name,
-    //      type: file.type,
-    //      data: file,
-    //    });
-    //  } catch (err) {
-    //    warn(`error adding files to uppy: ${err}`, {
-    //      id: "discourse.upload.uppy-add-files-error",
-    //    });
-    //  }
+      this._uppyInstance.on("file-added", (file) => {
+        console.log('file-added');
+      });
+
+      //const files = Array.from(event.target.files);
+      //files.forEach((file) => {
+      try {
+        console.log('try');
+        let thumbnailFile = this._uppyInstance.addFile({
+          source: `${this.id} thumbnail`,
+          name: 'thumbnail',
+          type: blob.type,
+          data: blob,
+        });
+        //console.log(thumbnailFile);
+        //console.log(thumbnailFile.src);
+      } catch (err) {
+        warn(`error adding files to uppy: ${err}`, {
+          id: "discourse.upload.uppy-add-files-error",
+        });
+      }
+    });
     //});
 
 
