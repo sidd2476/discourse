@@ -66,6 +66,8 @@ class Chat::ChatNotifier
   ### Public API
 
   def notify_new
+    create_mentions
+
     to_notify = list_users_to_notify
     mentioned_user_ids = to_notify.extract!(:all_mentioned_user_ids)[:all_mentioned_user_ids]
 
@@ -107,6 +109,14 @@ class Chat::ChatNotifier
   end
 
   private
+
+  def create_mentions
+    return if @mentions.all_mentioned_users_ids.blank?
+
+    User
+      .where(id: @mentions.all_mentioned_users_ids)
+      .each { |user| ChatMention.create(chat_message: @chat_message, user: user) }
+  end
 
   def list_users_to_notify
     mentions_count =
