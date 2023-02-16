@@ -38,6 +38,11 @@ class UploadsController < ApplicationController
       return render json: failed_json, status: 422
     end
 
+    if type == "video_thumbnail"
+      topic_id = params[:video_sha1]
+      puts "VIDEO_THUMBNAIL: #{video_sha1}"
+    end
+
     url = params[:url]
     file = params[:file] || params[:files]&.first
     pasted = params[:pasted] == "true"

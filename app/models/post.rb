@@ -1007,8 +1007,28 @@ class Post < ActiveRecord::Base
       upload = nil
       upload = Upload.find_by(sha1: sha1) if sha1.present?
       upload ||= Upload.get_from_url(src)
+      if upload.present?
+        puts "SHA1: #{sha1}"
+        thumbnail = Upload.find_by(original_filename: "#{upload.sha1}.png") if upload.sha1.present?
+        puts "THUMBNAIL: #{thumbnail}"
+        if thumbnail.present?
+          upload_ids << thumbnail.id if thumbnail.present?
+
+          if self.is_first_post? #topic
+            puts "TOPIC!!!!!!!!!!!!"
+            self.topic.update_column(:image_upload_id, thumbnail.id)
+            extra_sizes =
+              ThemeModifierHelper.new(theme_ids: Theme.user_selectable.pluck(:id)).topic_thumbnail_sizes
+            self.topic.generate_thumbnails!(extra_sizes: extra_sizes)
+          end
+        end
+      end
       upload_ids << upload.id if upload.present?
     end
+
+    puts "UPLOAD_IDS"
+    puts upload_ids
+    #puts "THUMBNAIL: #{thumbnail}"
 
     upload_references =
       upload_ids.map do |upload_id|

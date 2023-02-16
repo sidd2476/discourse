@@ -580,7 +580,10 @@ export default Component.extend(ComposerUploadUppy, {
     }
 
     console.log('VideoThumbnailButtonClick');
-    var video = document.getElementById("thumb");
+    let video = document.getElementById("thumb");
+    let video_src = video.getElementsByTagName("source")[0].src
+    let video_sha1 = video_src.substring(video_src.lastIndexOf('/')+1).split(".")[0];
+    console.log(video_sha1);
 
     let canvas = document.getElementById("canvas");
     let ctx = canvas.getContext("2d");
@@ -614,9 +617,13 @@ export default Component.extend(ComposerUploadUppy, {
     //
     //const id = this.get("field.id");
       const id = 12;
+      //console.log(this.get("composer"));
       this._uppyInstance = new Uppy({
         id: `screenshot-placeholder`,
-        meta: { upload_type: `thumbnail_${id}` },
+        meta: {
+          upload_type: `thumbnail`,
+          video_sha1: video_sha1,
+        },
         autoProceed: true,
       });
 
@@ -658,7 +665,7 @@ export default Component.extend(ComposerUploadUppy, {
         console.log('try');
         let thumbnailFile = this._uppyInstance.addFile({
           source: `${this.id} thumbnail`,
-          name: 'thumbnail',
+          name: video_sha1,
           type: blob.type,
           data: blob,
         });
