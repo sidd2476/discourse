@@ -143,7 +143,7 @@ describe Chat::ChatMessageCreator do
       expect(events.map { _1[:event_name] }).to include(:chat_message_created)
     end
 
-    it "creates mention notifications for public chat" do
+    it "creates mentions and mention notifications for public chat" do
       message =
         Chat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
@@ -152,18 +152,20 @@ describe Chat::ChatMessageCreator do
             "this is a @#{user1.username} message with @system @mentions @#{user2.username} and @#{user3.username}",
         ).chat_message
 
-      # a notification for the user himself wasn't created
+      # a mention for the user himself wasn't created
       user1_mention = user1.chat_mentions.where(chat_message: message).first
-      expect(user1_mention.notification).to be_nil
+      expect(user1_mention).to be_nil
 
       system_user_mention =
         User.where(id: -1).first.chat_mentions.where(chat_message: message).first
-      expect(system_user_mention.notification).to be_nil
+      expect(system_user_mention).to be_nil
 
       user2_mention = user2.chat_mentions.where(chat_message: message).first
+      expect(user2_mention).to be_present
       expect(user2_mention.notification).to be_present
 
       user3_mention = user3.chat_mentions.where(chat_message: message).first
+      expect(user3_mention).to be_present
       expect(user3_mention.notification).to be_present
     end
 
