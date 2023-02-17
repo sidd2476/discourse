@@ -20,9 +20,9 @@ class Chat::ChatMessageMentions
 
   def all_mentioned_users_ids
     result = global_mentions.pluck(:id)
-    result << direct_mentions.pluck(:id)
-    result << group_mentions.pluck(:id)
-    result << here_mentions.pluck(:id)
+    result.concat(direct_mentions.pluck(:id))
+    result.concat(group_mentions.pluck(:id))
+    result.concat(here_mentions.pluck(:id))
     result.uniq!
     result
   end
