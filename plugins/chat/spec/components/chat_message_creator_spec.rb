@@ -271,7 +271,7 @@ describe Chat::ChatMessageCreator do
       expect(user3_mention.notification).to be_nil
     end
 
-    it "doesn't create mention notifications for users with chat disabled" do
+    it "doesn't create mentions for users with chat disabled" do
       user2.user_option.update(chat_enabled: false)
 
       message =
@@ -282,7 +282,7 @@ describe Chat::ChatMessageCreator do
         ).chat_message
 
       mention = user2.chat_mentions.where(chat_message: message).first
-      expect(mention.notification).to be_nil
+      expect(mention).to be_nil
     end
 
     it "creates only mention notifications for users with access in private chat" do
