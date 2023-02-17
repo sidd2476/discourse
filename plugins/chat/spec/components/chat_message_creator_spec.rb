@@ -301,15 +301,29 @@ describe Chat::ChatMessageCreator do
       expect(user3_mention.notification).to be_nil
     end
 
-    it "creates a mention notifications for group users that are participating in private chat" do
+    it "creates a mention for group users even if they're not participating in private chat" do
       expect {
         Chat::ChatMessageCreator.create(
           chat_channel: direct_message_channel,
           user: user1,
           content: "hello there @#{user_group.name}",
         )
-        # Only user2 should be notified
-      }.to change { user2.chat_mentions.count }.by(1).and not_change { user3.chat_mentions.count }
+      }.to change { user2.chat_mentions.count }.by(1).and change { user3.chat_mentions.count }.by(1)
+    end
+
+    it "creates a mention notifications only for group users that are participating in private chat" do
+      message =
+        Chat::ChatMessageCreator.create(
+          chat_channel: direct_message_channel,
+          user: user1,
+          content: "hello there @#{user_group.name}",
+        ).chat_message
+
+      user2_mention = user2.chat_mentions.where(chat_message: message).first
+      expect(user2_mention.notification).to be_present
+
+      user3_mention = user3.chat_mentions.where(chat_message: message).first
+      expect(user3_mention.notification).to be_nil
     end
 
     it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
